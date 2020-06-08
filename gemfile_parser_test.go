@@ -1,14 +1,14 @@
-package main_test
+package unicorn_test
 
 import (
 	"io/ioutil"
 	"os"
 	"testing"
 
+	"github.com/paketo-community/unicorn"
 	"github.com/sclevine/spec"
 
 	. "github.com/onsi/gomega"
-	main "github.com/paketo-community/unicorn"
 )
 
 func testGemfileParser(t *testing.T, context spec.G, it spec.S) {
@@ -16,7 +16,7 @@ func testGemfileParser(t *testing.T, context spec.G, it spec.S) {
 		Expect = NewWithT(t).Expect
 
 		path   string
-		parser main.GemfileParser
+		parser unicorn.GemfileParser
 	)
 
 	it.Before(func() {
@@ -26,7 +26,7 @@ func testGemfileParser(t *testing.T, context spec.G, it spec.S) {
 
 		path = file.Name()
 
-		parser = main.NewGemfileParser()
+		parser = unicorn.NewGemfileParser()
 	})
 
 	it.After(func() {

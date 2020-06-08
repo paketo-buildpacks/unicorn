@@ -5,14 +5,15 @@ import (
 
 	"github.com/paketo-buildpacks/packit"
 	"github.com/paketo-buildpacks/packit/scribe"
+	"github.com/paketo-community/unicorn"
 )
 
 func main() {
-	parser := NewGemfileParser()
+	parser := unicorn.NewGemfileParser()
 	logger := scribe.NewLogger(os.Stdout)
 
-	detect := Detect(parser)
-	build := Build(logger)
-
-	packit.Run(detect, build)
+	packit.Run(
+		unicorn.Detect(parser),
+		unicorn.Build(logger),
+	)
 }

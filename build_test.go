@@ -1,4 +1,4 @@
-package main_test
+package unicorn_test
 
 import (
 	"bytes"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/paketo-buildpacks/packit"
 	"github.com/paketo-buildpacks/packit/scribe"
-	main "github.com/paketo-community/unicorn"
+	"github.com/paketo-community/unicorn"
 	"github.com/sclevine/spec"
 
 	. "github.com/onsi/gomega"
@@ -40,7 +40,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		buffer = bytes.NewBuffer(nil)
 		logger := scribe.NewLogger(buffer)
 
-		build = main.Build(logger)
+		build = unicorn.Build(logger)
 	})
 
 	it.After(func() {
@@ -80,7 +80,5 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 		Expect(buffer.String()).To(ContainSubstring("Some Buildpack some-version"))
 		Expect(buffer.String()).To(ContainSubstring("Writing start command"))
-
 	})
-
 }
