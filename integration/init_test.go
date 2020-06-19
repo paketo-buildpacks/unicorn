@@ -28,22 +28,22 @@ func TestIntegration(t *testing.T) {
 	Expect := NewWithT(t).Expect
 
 	root, err := filepath.Abs("./..")
-	Expect(err).ToNot(HaveOccurred())
+	Expect(err).NotTo(HaveOccurred())
 
 	unicornBuildpack, err = dagger.PackageBuildpack(root)
-	Expect(err).ToNot(HaveOccurred())
+	Expect(err).NotTo(HaveOccurred())
 
 	// HACK: we need to fix dagger and the package.sh scripts so that this isn't required
 	unicornBuildpack = fmt.Sprintf("%s.tgz", unicornBuildpack)
 
 	mriBuildpack, err = dagger.GetLatestCommunityBuildpack("paketo-community", "mri")
-	Expect(err).ToNot(HaveOccurred())
+	Expect(err).NotTo(HaveOccurred())
 
 	bundlerBuildpack, err = dagger.GetLatestCommunityBuildpack("paketo-community", "bundler")
-	Expect(err).ToNot(HaveOccurred())
+	Expect(err).NotTo(HaveOccurred())
 
 	bundleInstallBuildpack, err = dagger.GetLatestCommunityBuildpack("paketo-community", "bundle-install")
-	Expect(err).ToNot(HaveOccurred())
+	Expect(err).NotTo(HaveOccurred())
 
 	defer func() {
 		Expect(dagger.DeleteBuildpack(unicornBuildpack)).To(Succeed())
