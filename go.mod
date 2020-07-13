@@ -3,7 +3,6 @@ module github.com/paketo-community/unicorn
 go 1.14
 
 require (
-	github.com/cloudfoundry/dagger v0.0.0-20200527145232-311fc2f5c815
 	github.com/onsi/gomega v1.10.1
 	github.com/paketo-buildpacks/occam v0.0.16
 	github.com/paketo-buildpacks/packit v0.2.1
