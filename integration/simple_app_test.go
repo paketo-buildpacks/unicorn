@@ -84,7 +84,7 @@ func testSimpleApp(t *testing.T, context spec.G, it spec.S) {
 			Expect(string(content)).To(ContainSubstring("Hello world!"))
 
 			Expect(logs).To(ContainLines(
-				"Unicorn Buildpack 1.2.3",
+				"Paketo Unicorn Buildpack 1.2.3",
 				"  Writing start command",
 				"    bundle exec unicorn",
 			))
