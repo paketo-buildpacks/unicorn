@@ -73,7 +73,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			Processes: []packit.Process{
 				{
 					Type:    "web",
-					Command: "bundle exec unicorn",
+					Command: `bundle exec unicorn --listen "${PORT:-8080}"`,
 				},
 			},
 		}))

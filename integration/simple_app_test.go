@@ -51,43 +51,89 @@ func testSimpleApp(t *testing.T, context spec.G, it spec.S) {
 			Expect(os.RemoveAll(source)).To(Succeed())
 		})
 
-		it("creates a working OCI image with a unicorn start command", func() {
-			var err error
-			source, err = occam.Source(filepath.Join("testdata", "simple_app"))
-			Expect(err).NotTo(HaveOccurred())
+		context("a container port is specified", func() {
+			it("creates a working OCI image with a unicorn start command", func() {
+				var err error
+				source, err = occam.Source(filepath.Join("testdata", "simple_app"))
+				Expect(err).NotTo(HaveOccurred())
 
-			var logs fmt.Stringer
-			image, logs, err = pack.WithNoColor().Build.
-				WithBuildpacks(
-					settings.Buildpacks.MRI.Online,
-					settings.Buildpacks.Bundler.Online,
-					settings.Buildpacks.BundleInstall.Online,
-					settings.Buildpacks.Unicorn.Online,
-				).
-				WithNoPull().
-				Execute(name, source)
-			Expect(err).NotTo(HaveOccurred(), logs.String())
+				var logs fmt.Stringer
+				image, logs, err = pack.WithNoColor().Build.
+					WithBuildpacks(
+						settings.Buildpacks.MRI.Online,
+						settings.Buildpacks.Bundler.Online,
+						settings.Buildpacks.BundleInstall.Online,
+						settings.Buildpacks.Unicorn.Online,
+					).
+					WithNoPull().
+					Execute(name, source)
+				Expect(err).NotTo(HaveOccurred(), logs.String())
 
-			container, err = docker.Container.Run.WithEnv(map[string]string{"PORT": "8080"}).Execute(image.ID)
-			Expect(err).NotTo(HaveOccurred())
+				container, err = docker.Container.Run.WithEnv(map[string]string{"PORT": "8088"}).Execute(image.ID)
+				Expect(err).NotTo(HaveOccurred())
 
-			Eventually(container).Should(BeAvailable())
+				Eventually(container).Should(BeAvailable())
 
-			response, err := http.Get(fmt.Sprintf("http://localhost:%s", container.HostPort()))
-			Expect(err).NotTo(HaveOccurred())
-			defer response.Body.Close()
+				_, exists := container.Ports["8088"]
+				Expect(exists).To(BeTrue())
 
-			Expect(response.StatusCode).To(Equal(http.StatusOK))
+				response, err := http.Get(fmt.Sprintf("http://localhost:%s", container.HostPort()))
+				Expect(err).NotTo(HaveOccurred())
+				defer response.Body.Close()
 
-			content, err := ioutil.ReadAll(response.Body)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(string(content)).To(ContainSubstring("Hello world!"))
+				Expect(response.StatusCode).To(Equal(http.StatusOK))
 
-			Expect(logs).To(ContainLines(
-				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
-				"  Writing start command",
-				"    bundle exec unicorn",
-			))
+				content, err := ioutil.ReadAll(response.Body)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(string(content)).To(ContainSubstring("Hello world!"))
+
+				Expect(logs).To(ContainLines(
+					MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
+					"  Writing start command",
+					`    bundle exec unicorn --listen "${PORT:-8080}"`,
+				))
+			})
+		})
+
+		context("no container port is specified", func() {
+			it("creates a working OCI image with a unicorn start command", func() {
+				var err error
+				source, err = occam.Source(filepath.Join("testdata", "simple_app"))
+				Expect(err).NotTo(HaveOccurred())
+
+				var logs fmt.Stringer
+				image, logs, err = pack.WithNoColor().Build.
+					WithBuildpacks(
+						settings.Buildpacks.MRI.Online,
+						settings.Buildpacks.Bundler.Online,
+						settings.Buildpacks.BundleInstall.Online,
+						settings.Buildpacks.Unicorn.Online,
+					).
+					WithNoPull().
+					Execute(name, source)
+				Expect(err).NotTo(HaveOccurred(), logs.String())
+
+				container, err = docker.Container.Run.Execute(image.ID)
+				Expect(err).NotTo(HaveOccurred())
+
+				Eventually(container).Should(BeAvailable())
+
+				response, err := http.Get(fmt.Sprintf("http://localhost:%s", container.HostPort()))
+				Expect(err).NotTo(HaveOccurred())
+				defer response.Body.Close()
+
+				Expect(response.StatusCode).To(Equal(http.StatusOK))
+
+				content, err := ioutil.ReadAll(response.Body)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(string(content)).To(ContainSubstring("Hello world!"))
+
+				Expect(logs).To(ContainLines(
+					MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
+					"  Writing start command",
+					`    bundle exec unicorn --listen "${PORT:-8080}"`,
+				))
+			})
 		})
 	})
 }
