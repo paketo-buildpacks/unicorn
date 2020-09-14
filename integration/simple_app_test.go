@@ -69,13 +69,23 @@ func testSimpleApp(t *testing.T, context spec.G, it spec.S) {
 					Execute(name, source)
 				Expect(err).NotTo(HaveOccurred(), logs.String())
 
-				container, err = docker.Container.Run.WithEnv(map[string]string{"PORT": "8088"}).Execute(image.ID)
+				Expect(logs).To(ContainLines(
+					MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
+					"  Writing start command",
+					`    bundle exec unicorn --listen "${PORT:-8080}"`,
+				))
+
+				container, err = docker.Container.Run.WithEnv(map[string]string{"PORT": "3000"}).Execute(image.ID)
 				Expect(err).NotTo(HaveOccurred())
 
 				Eventually(container).Should(BeAvailable())
 
-				_, exists := container.Ports["8088"]
-				Expect(exists).To(BeTrue())
+				logs, err = docker.Container.Logs.Execute(container.ID)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(logs).To(ContainLines(
+					ContainSubstring("listening on addr=0.0.0.0:3000"),
+				))
 
 				response, err := http.Get(fmt.Sprintf("http://localhost:%s", container.HostPort()))
 				Expect(err).NotTo(HaveOccurred())
@@ -86,12 +96,6 @@ func testSimpleApp(t *testing.T, context spec.G, it spec.S) {
 				content, err := ioutil.ReadAll(response.Body)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(string(content)).To(ContainSubstring("Hello world!"))
-
-				Expect(logs).To(ContainLines(
-					MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
-					"  Writing start command",
-					`    bundle exec unicorn --listen "${PORT:-8080}"`,
-				))
 			})
 		})
 
@@ -113,10 +117,23 @@ func testSimpleApp(t *testing.T, context spec.G, it spec.S) {
 					Execute(name, source)
 				Expect(err).NotTo(HaveOccurred(), logs.String())
 
+				Expect(logs).To(ContainLines(
+					MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
+					"  Writing start command",
+					`    bundle exec unicorn --listen "${PORT:-8080}"`,
+				))
+
 				container, err = docker.Container.Run.Execute(image.ID)
 				Expect(err).NotTo(HaveOccurred())
 
 				Eventually(container).Should(BeAvailable())
+
+				logs, err = docker.Container.Logs.Execute(container.ID)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(logs).To(ContainLines(
+					ContainSubstring("listening on addr=0.0.0.0:8080"),
+				))
 
 				response, err := http.Get(fmt.Sprintf("http://localhost:%s", container.HostPort()))
 				Expect(err).NotTo(HaveOccurred())
@@ -127,12 +144,6 @@ func testSimpleApp(t *testing.T, context spec.G, it spec.S) {
 				content, err := ioutil.ReadAll(response.Body)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(string(content)).To(ContainSubstring("Hello world!"))
-
-				Expect(logs).To(ContainLines(
-					MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
-					"  Writing start command",
-					`    bundle exec unicorn --listen "${PORT:-8080}"`,
-				))
 			})
 		})
 	})
