@@ -10,7 +10,8 @@ func Build(logger scribe.Logger) packit.BuildFunc {
 		logger.Title("%s %s", context.BuildpackInfo.Name, context.BuildpackInfo.Version)
 
 		logger.Process("Writing start command")
-		command := "bundle exec unicorn"
+		// 8080 is the default unicorn port
+		command := `bundle exec unicorn --listen "${PORT:-8080}"`
 		logger.Subprocess(command)
 
 		return packit.BuildResult{
