@@ -1,4 +1,4 @@
-module github.com/paketo-community/unicorn
+module github.com/paketo-buildpacks/unicorn
 
 go 1.14
 

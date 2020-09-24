@@ -9,8 +9,8 @@ import (
 	"io/ioutil"
 
 	"github.com/paketo-buildpacks/packit"
-	"github.com/paketo-community/unicorn"
-	"github.com/paketo-community/unicorn/fakes"
+	"github.com/paketo-buildpacks/unicorn"
+	"github.com/paketo-buildpacks/unicorn/fakes"
 	"github.com/sclevine/spec"
 
 	. "github.com/onsi/gomega"

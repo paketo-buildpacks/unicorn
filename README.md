@@ -1,6 +1,6 @@
 # Unicorn Cloud Native Buildpack
 
-## `gcr.io/paketo-community/unicorn`
+## `gcr.io/paketo-buildpacks/unicorn`
 
 The Unicorn CNB sets the start command for a given ruby application that runs on a Unicorn server.
 
