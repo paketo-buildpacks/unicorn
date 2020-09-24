@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/paketo-community/unicorn"
+	"github.com/paketo-buildpacks/unicorn"
 	"github.com/sclevine/spec"
 
 	. "github.com/onsi/gomega"

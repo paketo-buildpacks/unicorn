@@ -1,8 +1,9 @@
 api = "0.2"
 
 [buildpack]
-  id = "paketo-community/unicorn"
+  id = "paketo-buildpacks/unicorn"
   name = "Paketo Unicorn Buildpack"
+  homepage = "https://github.com/paketo-buildpacks/unicorn"
 
 [metadata]
   include_files = ["bin/run", "bin/build","bin/detect","buildpack.toml"]
