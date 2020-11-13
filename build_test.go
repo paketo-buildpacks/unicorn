@@ -70,10 +70,12 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				Entries: nil,
 			},
 			Layers: nil,
-			Processes: []packit.Process{
-				{
-					Type:    "web",
-					Command: `bundle exec unicorn --listen "${PORT:-8080}"`,
+			Launch: packit.LaunchMetadata{
+				Processes: []packit.Process{
+					{
+						Type:    "web",
+						Command: `bundle exec unicorn --listen "${PORT:-8080}"`,
+					},
 				},
 			},
 		}))
