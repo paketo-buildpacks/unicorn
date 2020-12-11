@@ -75,7 +75,11 @@ func testSimpleApp(t *testing.T, context spec.G, it spec.S) {
 					`    bundle exec unicorn --listen "${PORT:-8080}"`,
 				))
 
-				container, err = docker.Container.Run.WithEnv(map[string]string{"PORT": "3000"}).Execute(image.ID)
+				container, err = docker.Container.Run.
+					WithEnv(map[string]string{"PORT": "3000"}).
+					WithPublish("3000").
+					WithPublishAll().
+					Execute(image.ID)
 				Expect(err).NotTo(HaveOccurred())
 
 				Eventually(container).Should(BeAvailable())
@@ -87,7 +91,7 @@ func testSimpleApp(t *testing.T, context spec.G, it spec.S) {
 					ContainSubstring("listening on addr=0.0.0.0:3000"),
 				))
 
-				response, err := http.Get(fmt.Sprintf("http://localhost:%s", container.HostPort()))
+				response, err := http.Get(fmt.Sprintf("http://localhost:%s", container.HostPort("3000")))
 				Expect(err).NotTo(HaveOccurred())
 				defer response.Body.Close()
 
@@ -123,7 +127,10 @@ func testSimpleApp(t *testing.T, context spec.G, it spec.S) {
 					`    bundle exec unicorn --listen "${PORT:-8080}"`,
 				))
 
-				container, err = docker.Container.Run.Execute(image.ID)
+				container, err = docker.Container.Run.
+					WithPublish("8080").
+					WithPublishAll().
+					Execute(image.ID)
 				Expect(err).NotTo(HaveOccurred())
 
 				Eventually(container).Should(BeAvailable())
@@ -135,7 +142,7 @@ func testSimpleApp(t *testing.T, context spec.G, it spec.S) {
 					ContainSubstring("listening on addr=0.0.0.0:8080"),
 				))
 
-				response, err := http.Get(fmt.Sprintf("http://localhost:%s", container.HostPort()))
+				response, err := http.Get(fmt.Sprintf("http://localhost:%s", container.HostPort("8080")))
 				Expect(err).NotTo(HaveOccurred())
 				defer response.Body.Close()
 
