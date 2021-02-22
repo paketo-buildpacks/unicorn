@@ -2,8 +2,6 @@ package integration_test
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"os"
 	"path/filepath"
 	"testing"
@@ -91,15 +89,7 @@ func testSimpleApp(t *testing.T, context spec.G, it spec.S) {
 					ContainSubstring("listening on addr=0.0.0.0:3000"),
 				))
 
-				response, err := http.Get(fmt.Sprintf("http://localhost:%s", container.HostPort("3000")))
-				Expect(err).NotTo(HaveOccurred())
-				defer response.Body.Close()
-
-				Expect(response.StatusCode).To(Equal(http.StatusOK))
-
-				content, err := ioutil.ReadAll(response.Body)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(string(content)).To(ContainSubstring("Hello world!"))
+				Eventually(container).Should(Serve(ContainSubstring("Hello world!")).OnPort(3000))
 			})
 		})
 
@@ -142,15 +132,7 @@ func testSimpleApp(t *testing.T, context spec.G, it spec.S) {
 					ContainSubstring("listening on addr=0.0.0.0:8080"),
 				))
 
-				response, err := http.Get(fmt.Sprintf("http://localhost:%s", container.HostPort("8080")))
-				Expect(err).NotTo(HaveOccurred())
-				defer response.Body.Close()
-
-				Expect(response.StatusCode).To(Equal(http.StatusOK))
-
-				content, err := ioutil.ReadAll(response.Body)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(string(content)).To(ContainSubstring("Hello world!"))
+				Eventually(container).Should(Serve(ContainSubstring("Hello world!")).OnPort(8080))
 			})
 		})
 	})
