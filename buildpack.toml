@@ -1,9 +1,15 @@
 api = "0.6"
 
 [buildpack]
+  description = "A buildpack for starting a unicorn server for a Ruby app"
   homepage = "https://github.com/paketo-buildpacks/unicorn"
   id = "paketo-buildpacks/unicorn"
+  keywords = ["ruby", "unicorn"]
   name = "Paketo Unicorn Buildpack"
+
+  [[buildpack.licenses]]
+    type = "Apache-2.0"
+    uri = "https://github.com/paketo-buildpacks/unicorn/blob/main/LICENSE"
 
 [metadata]
   include-files = ["bin/run", "bin/build", "bin/detect", "buildpack.toml"]
