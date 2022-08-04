@@ -10,7 +10,7 @@ import (
 
 func main() {
 	parser := unicorn.NewGemfileParser()
-	logger := scribe.NewEmitter(os.Stdout)
+	logger := scribe.NewEmitter(os.Stdout).WithLevel(os.Getenv("BP_LOG_LEVEL"))
 
 	packit.Run(
 		unicorn.Detect(parser),
