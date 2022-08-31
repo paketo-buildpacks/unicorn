@@ -5,7 +5,7 @@ api = "0.7"
   homepage = "https://github.com/paketo-buildpacks/unicorn"
   id = "paketo-buildpacks/unicorn"
   keywords = ["ruby", "unicorn"]
-  name = "Paketo Unicorn Buildpack"
+  name = "Paketo Buildpack for Unicorn"
 
   [[buildpack.licenses]]
     type = "Apache-2.0"
