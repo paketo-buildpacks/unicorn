@@ -3,7 +3,7 @@ module github.com/paketo-buildpacks/unicorn
 go 1.16
 
 require (
-	github.com/BurntSushi/toml v1.2.0
+	github.com/BurntSushi/toml v1.2.1
 	github.com/Microsoft/go-winio v0.6.0 // indirect
 	github.com/docker/docker v20.10.19+incompatible // indirect
 	github.com/moby/term v0.0.0-20220808134915-39b0c02b01ae // indirect
