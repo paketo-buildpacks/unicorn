@@ -2,10 +2,10 @@ package unicorn
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 
 	"github.com/paketo-buildpacks/packit/v2"
+	"github.com/paketo-buildpacks/packit/v2/fs"
 )
 
 //go:generate faux --interface Parser --output fakes/parser.go
@@ -19,12 +19,13 @@ type BuildPlanMetadata struct {
 
 func Detect(gemfileParser Parser) packit.DetectFunc {
 	return func(context packit.DetectContext) (packit.DetectResult, error) {
-		_, err := os.Stat(filepath.Join(context.WorkingDir, "config.ru"))
+		exists, err := fs.Exists(filepath.Join(context.WorkingDir, "config.ru"))
 		if err != nil {
-			if os.IsNotExist(err) {
-				return packit.DetectResult{}, packit.Fail
-			}
-			return packit.DetectResult{}, fmt.Errorf("failed to stat config.ru: %w", err)
+			return packit.DetectResult{}, fmt.Errorf("failed to stat 'config.ru': %w", err)
+		}
+
+		if !exists {
+			return packit.DetectResult{}, packit.Fail.WithMessage("no 'config.ru' file found")
 		}
 
 		hasUnicorn, err := gemfileParser.Parse(filepath.Join(context.WorkingDir, "Gemfile"))
@@ -33,7 +34,7 @@ func Detect(gemfileParser Parser) packit.DetectFunc {
 		}
 
 		if !hasUnicorn {
-			return packit.DetectResult{}, packit.Fail
+			return packit.DetectResult{}, packit.Fail.WithMessage("unicorn was not found in the Gemfile")
 		}
 
 		return packit.DetectResult{
